@@ -1,0 +1,24 @@
+model Customer {
+    id        Int      @id @default(autoincrement())
+    firstname      String @map("first_name")
+    lastname     String @map("last_name")
+    email     String   @unique
+    phone     String?
+    bookingDate DateTime? @map("booking_date")
+    termsAccepted Boolean @default(false) @map("terms_accepted")
+    status   CustomerStatus @default(INTERESTED)
+    classifiedId Int? @map("classified_id")
+    classified Classified? @relation(fields: [classifiedId], references: [id], onDelete: Cascade)
+    lifecycle CustomerLifeCycle[]
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("customers")
+}
+
+enum CustomerStatus {
+    INTERESTED
+    CONTACTED
+    PURCHASED
+    COLD
+}
