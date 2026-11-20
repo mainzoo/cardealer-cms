@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 import sharp from "sharp";
 import { rgbaToThumbHash } from "thumbhash";
-import { imageSources } from "../../config/constants";
+import { imageSources } from "../../src/config/constants";
 
 const thumbhashCache = new Map<string, string>();
 

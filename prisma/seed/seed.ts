@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../../src/lib/prisma";
 import { seedTaxonomy } from "./taxonomy.seed";
 import { seedClassifieds } from "./classifieds.seed";
 import { seedImages } from "./images.seed";

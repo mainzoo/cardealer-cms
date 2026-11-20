@@ -1,0 +1,25 @@
+import React from "react";
+
+export default function SiteLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex min-h-screen flex-col bg-background">
+      <header className="border-b bg-card px-6 py-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
+          <span className="text-xl font-bold tracking-tight">CarDealer CMS</span>
+        </div>
+      </header>
+
+      <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {children}
+      </main>
+
+      <footer className="border-t bg-card py-6 text-center text-sm text-muted-foreground">
+        <p>&copy; 2026 CarDealer CMS. All rights reserved.</p>
+      </footer>
+    </div>
+  );
+}
