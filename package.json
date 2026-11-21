@@ -21,6 +21,7 @@
     "csv": "^6.6.4",
     "framer-motion": "^14.14.0",
     "html-react-parser": "^6.1.10",
+    "ky": "^2.2.0",
     "lucide-react": "^1.73.0",
     "next": "16.4.6",
     "nextjs-toploader": "^3.9.17",
