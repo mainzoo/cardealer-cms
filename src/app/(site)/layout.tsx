@@ -1,4 +1,7 @@
-import React from "react";
+import React, { Suspense } from "react";
+import Link from "next/link";
+import { routes } from "@/config/routes";
+import { FavouriteCounter } from "@/components/layout/favourite-counter";
 
 export default function SiteLayout({
   children,
@@ -9,7 +12,14 @@ export default function SiteLayout({
     <div className="flex min-h-screen flex-col bg-background">
       <header className="border-b bg-card px-6 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <span className="text-xl font-bold tracking-tight">CarDealer CMS</span>
+          <Link href={routes.home} className="text-xl font-bold tracking-tight">
+            CarDealer CMS
+          </Link>
+          <Suspense fallback={
+            <div className="h-10 w-10 rounded-full bg-slate-100 animate-pulse" />
+          }>
+            <FavouriteCounter />
+          </Suspense>
         </div>
       </header>
 
