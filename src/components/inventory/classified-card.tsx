@@ -1,5 +1,5 @@
 import { routes } from "@/config/routes";
-import { ClassifiedWithImages } from "@/config/types";
+import { ClassifiedWithImages, Favourites } from "@/config/types";
 import Image from "next/image";
 import Link from "next/link";
 import { HTMLParser } from "../shared/html-parser";
@@ -9,6 +9,7 @@ import { FavouriteButton } from "./favourite-button";
 
 interface ClassifiedCardProps {
     classified: ClassifiedWithImages;
+    favourites: Favourites | null;
 }
 
 const getKeyClassifiedInfo = (classified: ClassifiedWithImages) => {
@@ -37,14 +38,15 @@ const getKeyClassifiedInfo = (classified: ClassifiedWithImages) => {
 };
 
 export const ClassifiedCard = (props: ClassifiedCardProps) => {
-    const { classified } = props;
+    const { classified, favourites } = props;
+    const isFavourite = favourites?.ids.includes(classified.id) ?? false;
 
     const mainImage = classified.images.find(img => img.isMain) || classified.images[0];
 
     return (
         <div className="group relative overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md flex flex-col justify-between">
             <div className="relative">
-                <FavouriteButton classifiedId={classified.id} />
+                <FavouriteButton classifiedId={classified.id} isFavourite={isFavourite} />
                 <Link href={routes.singleClassified(classified.slug)} className="block">
                     <div className="aspect-[3/2] relative w-full overflow-hidden bg-muted">
                         <Image

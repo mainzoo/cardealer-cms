@@ -25,3 +25,6 @@ export type ClassifiedWithImages = Prisma.ClassifiedGetPayload<{
         images: true;
     }
 }>;
+
+export type Favourites = { ids: number[] };
+

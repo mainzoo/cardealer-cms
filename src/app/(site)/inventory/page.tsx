@@ -1,7 +1,10 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { redis } from "@/lib/redis-store";
+import { getSourceId } from "@/lib/source-id";
 import { ClassifiedsList } from "@/components/inventory/classifieds-list";
+import { Favourites } from "@/config/types";
 
 const fetchInventoryData = async () => {
   await connection();
@@ -16,7 +19,12 @@ const fetchInventoryData = async () => {
 };
 
 async function InventoryResults() {
-  const classifieds = await fetchInventoryData();
+  const [classifieds, sourceId] = await Promise.all([
+    fetchInventoryData(),
+    getSourceId(),
+  ]);
+
+  const favourites = sourceId ? await redis.get<Favourites>(sourceId) : null;
 
   if (classifieds.length === 0) {
     return (
@@ -28,7 +36,7 @@ async function InventoryResults() {
     );
   }
 
-  return <ClassifiedsList classifieds={classifieds} />;
+  return <ClassifiedsList classifieds={classifieds} favourites={favourites} />;
 }
 
 export default function InventoryPage() {
