@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { endpoints } from "@/config/endpoints";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface FavouriteButtonProps {
     classifiedId: number;
@@ -19,6 +21,7 @@ export const FavouriteButton = ({
 }: FavouriteButtonProps) => {
     const [isFavourite, setIsFavourite] = useState(initialIsFavourite);
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
 
     const handleClick = async () => {
         setIsLoading(true);
@@ -33,11 +36,18 @@ export const FavouriteButton = ({
             });
 
             if (!response.ok) {
-                throw new Error("Failed to update");
+                if (response.status === 429) {
+                    toast.warning("Too many requests. Please wait a few seconds.");
+                } else {
+                    toast.error("Failed to update favourites");
+                }
+                setIsFavourite(previousState);
+            } else {
+                router.refresh();
             }
         } catch (error) {
             setIsFavourite(previousState);
-            console.error("Error updating favorite:", error);
+            toast.error("Failed to update favourites");
         } finally {
             setIsLoading(false);
         }

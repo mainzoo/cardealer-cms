@@ -1,12 +1,19 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { redis } from "@/lib/redis-store";
+import { redis, ratelimit } from "@/lib/redis-store";
 import { setSourceId } from "@/lib/source-id";
 import { routes } from "@/config/routes";
 import type { Favourites } from "@/config/types";
 
 export async function POST(req: Request) {
+  // Rate limiting based on IP
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? req.headers.get("x-real-ip") ?? "127.0.0.1";
+  const { success } = await ratelimit.limit(ip);
+  if (!success) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   const body = await req.json();
   const schema = z.object({ id: z.number().int() });
   const result = schema.safeParse(body);

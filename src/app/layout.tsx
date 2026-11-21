@@ -3,7 +3,7 @@ import "./globals.css";
 import { Mulish, Roboto } from "next/font/google";
 import { cn } from "@/lib/utils";
 import NextTopLoader from "nextjs-toploader";
-import { Toaster } from "@/components/ui/toast";
+import { Toaster } from "sonner";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export const metadata: Metadata = {
