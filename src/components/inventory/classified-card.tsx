@@ -5,6 +5,7 @@ import Link from "next/link";
 import { HTMLParser } from "../shared/html-parser";
 import { GaugeCircle, Cog, Fuel, Paintbrush } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { FavouriteButton } from "./favourite-button";
 
 interface ClassifiedCardProps {
     classified: ClassifiedWithImages;
@@ -42,7 +43,8 @@ export const ClassifiedCard = (props: ClassifiedCardProps) => {
 
     return (
         <div className="group relative overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md flex flex-col justify-between">
-            <div>
+            <div className="relative">
+                <FavouriteButton classifiedId={classified.id} />
                 <Link href={routes.singleClassified(classified.slug)} className="block">
                     <div className="aspect-[3/2] relative w-full overflow-hidden bg-muted">
                         <Image
