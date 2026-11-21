@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { HTTPError } from "ky";
 import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -24,10 +24,6 @@ export const FavouriteButton = ({
 	const [isFavourite, setIsFavourite] = useState(initialIsFavourite);
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
-
-	useEffect(() => {
-		setIsFavourite(initialIsFavourite);
-	}, [initialIsFavourite]);
 
 	const handleClick = async () => {
 		setIsLoading(true);

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { redis } from "@/lib/redis-store";
 import { getSourceId } from "@/lib/source-id";
 import { ClassifiedsList } from "@/components/inventory/classifieds-list";
-import { CustomPageProps, Favourites } from "@/config/types";
+import { Favourites } from "@/config/types";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { routes } from "@/config/routes";
@@ -33,7 +33,7 @@ async function FavouritesResults() {
   if (ids.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-dashed p-12 text-center">
-        <p className="text-muted-foreground">You haven't saved any vehicles yet.</p>
+        <p className="text-muted-foreground">You haven&apos;t saved any vehicles yet.</p>
         <Button nativeButton={false} render={<Link href={routes.inventory} />}>
           Explore Inventory
         </Button>

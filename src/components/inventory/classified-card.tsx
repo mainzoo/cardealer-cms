@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { routes } from "@/config/routes";
@@ -46,13 +45,7 @@ export const ClassifiedCard = (props: ClassifiedCardProps) => {
     const { classified, favourites } = props;
     const isFavourite = favourites?.ids.includes(classified.id) ?? false;
     const pathname = usePathname();
-    const [isVisible, setIsVisible] = useState(true);
-
-    useEffect(() => {
-        if (!isFavourite && pathname === routes.favourites) {
-            setIsVisible(false);
-        }
-    }, [isFavourite, pathname]);
+    const isVisible = pathname !== routes.favourites || isFavourite;
 
     const mainImage = classified.images.find(img => img.isMain) || classified.images[0];
 
