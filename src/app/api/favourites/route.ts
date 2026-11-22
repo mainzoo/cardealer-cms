@@ -33,6 +33,7 @@ export async function POST(req: Request) {
 
   const members = await redis.smembers(sourceId);
   revalidatePath(routes.favourites);
+  revalidatePath(routes.inventory);
 
   return NextResponse.json({ ids: members.map(Number) }, { status: 200 });
 }

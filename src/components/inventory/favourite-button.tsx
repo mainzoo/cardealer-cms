@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,10 @@ export const FavouriteButton = ({
 }: FavouriteButtonProps) => {
     const [isFavourite, setIsFavourite] = useState(initialIsFavourite);
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        setIsFavourite(initialIsFavourite);
+    }, [initialIsFavourite]);
 
     const handleClick = async () => {
         setIsLoading(true);
@@ -42,6 +46,7 @@ export const FavouriteButton = ({
                 setIsFavourite(previousState);
             } else {
                 const data = await response.json();
+                sessionStorage.setItem("favourite-ids", JSON.stringify(data.ids));
                 const newCount = data.ids.length;
                 
                 const badge = document.getElementById("favourites-badge-count");
@@ -50,6 +55,7 @@ export const FavouriteButton = ({
                     badge.classList.toggle("hidden", newCount === 0);
                     badge.classList.toggle("flex", newCount > 0);
                 }
+                window.dispatchEvent(new CustomEvent("favourites-updated", { detail: { ids: data.ids } }));
             }
         } catch (error) {
             setIsFavourite(previousState);

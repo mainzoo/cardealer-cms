@@ -1,13 +1,43 @@
+"use client";
+
 import Link from "next/link";
 import { Heart } from "lucide-react";
-import { redis } from "@/lib/redis-store";
-import { getSourceId } from "@/lib/source-id";
 import { routes } from "@/config/routes";
+import { useEffect, useState } from "react";
 
-export async function FavouriteCounter() {
-  const sourceId = await getSourceId();
-  const members = sourceId ? await redis.smembers(sourceId) : [];
-  const count = members?.length ?? 0;
+interface FavouriteCounterProps {
+  initialCount: number;
+}
+
+export function FavouriteCounter({ initialCount }: FavouriteCounterProps) {
+  const [count, setCount] = useState(initialCount);
+
+  useEffect(() => {
+    const syncFromStorage = () => {
+        const stored = sessionStorage.getItem("favourite-ids");
+        if (stored) {
+            const ids: number[] = JSON.parse(stored);
+            setCount(ids.length);
+        }
+    };
+
+    syncFromStorage();
+
+    const handleUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent<{ ids: number[] }>;
+      setCount(customEvent.detail.ids.length);
+    };
+
+    window.addEventListener("favourites-updated", handleUpdate);
+    window.addEventListener("pageshow", syncFromStorage);
+    window.addEventListener("focus", syncFromStorage);
+
+    return () => {
+        window.removeEventListener("favourites-updated", handleUpdate);
+        window.removeEventListener("pageshow", syncFromStorage);
+        window.removeEventListener("focus", syncFromStorage);
+    };
+  }, []);
 
   return (
     <Link
