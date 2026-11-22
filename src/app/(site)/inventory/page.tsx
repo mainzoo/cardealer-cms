@@ -1,53 +1,63 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { z } from "zod";
+import { ClassifiedsList } from "@/components/inventory/classifieds-list";
+import { CustomPagination } from "@/components/shared/custom-pagination";
+import { CLASSIFIEDS_PER_PAGE } from "@/config/constants";
+import type { CustomPageProps, Favourites } from "@/config/types";
 import { prisma } from "@/lib/prisma";
 import { redis } from "@/lib/redis-store";
 import { getSourceId } from "@/lib/source-id";
-import { ClassifiedsList } from "@/components/inventory/classifieds-list";
-import { Favourites } from "@/config/types";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 
-const PAGE_SIZE = 12;
+const pageSchema = z
+  .string()
+  .regex(/^\d+$/)
+  .transform(Number)
+  .pipe(z.number().positive());
 
-const fetchInventoryData = async (page: number) => {
+const fetchInventoryData = async (requestedPage: number) => {
   await connection();
-  const [classifieds, total] = await Promise.all([
-    prisma.classified.findMany({
-      include: { images: true },
-      orderBy: { createdAt: "desc" },
-      take: PAGE_SIZE,
-      skip: (page - 1) * PAGE_SIZE,
-    }),
-    prisma.classified.count(),
-  ]);
-  return { classifieds, total };
+
+  const total = await prisma.classified.count();
+  const totalPages = Math.max(1, Math.ceil(total / CLASSIFIEDS_PER_PAGE));
+  const safePage = Math.min(requestedPage, totalPages);
+
+  const classifieds = await prisma.classified.findMany({
+    include: {
+      images: {
+        take: 1,
+        orderBy: { isMain: "desc" },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: CLASSIFIEDS_PER_PAGE,
+    skip: (safePage - 1) * CLASSIFIEDS_PER_PAGE,
+  });
+
+  return { classifieds, total, totalPages };
 };
 
 async function InventoryResults({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: CustomPageProps["searchParams"];
 }) {
   const resolvedSearchParams = await searchParams;
-  const page = Number(resolvedSearchParams.page) || 1;
+  const rawPage = Array.isArray(resolvedSearchParams.page)
+    ? resolvedSearchParams.page[0]
+    : resolvedSearchParams.page;
+
+  const pageResult = pageSchema.safeParse(rawPage);
+  const requestedPage = pageResult.success ? pageResult.data : 1;
 
   const [data, sourceId] = await Promise.all([
-    fetchInventoryData(page),
+    fetchInventoryData(requestedPage),
     getSourceId(),
   ]);
 
   const members = sourceId ? await redis.smembers(sourceId) : [];
   const favourites: Favourites = { ids: members.map(Number) };
-  
-  const { classifieds, total } = data;
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const { classifieds, total, totalPages } = data;
 
   if (total === 0) {
     return (
@@ -63,45 +73,29 @@ async function InventoryResults({
     <div className="flex flex-col gap-8">
       <p className="text-muted-foreground">We have found {total} classifieds</p>
       <ClassifiedsList classifieds={classifieds} favourites={favourites} />
-      
-      {totalPages > 1 && (
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious href={`?page=${Math.max(1, page - 1)}`} />
-            </PaginationItem>
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <PaginationItem key={i + 1}>
-                <PaginationLink href={`?page=${i + 1}`} isActive={page === i + 1}>
-                  {i + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext href={`?page=${Math.min(totalPages, page + 1)}`} />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
+
+      {totalPages > 1 && <CustomPagination totalPages={totalPages} />}
     </div>
   );
 }
 
-export default function InventoryPage({ 
-    searchParams 
-}: { 
-    searchParams: Promise<{ page?: string }> 
-}) {
+export default function InventoryPage({ searchParams }: CustomPageProps) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-extrabold tracking-tight">Vehicle Inventory</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight">
+          Vehicle Inventory
+        </h1>
         <p className="text-muted-foreground">
           Browse, filter, and manage vehicle listings in real-time.
         </p>
       </div>
 
-      <Suspense fallback={<p className="text-sm text-muted-foreground">Loading inventory...</p>}>
+      <Suspense
+        fallback={
+          <p className="text-sm text-muted-foreground">Loading inventory...</p>
+        }
+      >
         <InventoryResults searchParams={searchParams} />
       </Suspense>
     </div>
