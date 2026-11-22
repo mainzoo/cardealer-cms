@@ -2,15 +2,7 @@ import React, { Suspense } from "react";
 import Link from "next/link";
 import { routes } from "@/config/routes";
 import { FavouriteCounter } from "@/components/layout/favourite-counter";
-import { getSourceId } from "@/lib/source-id";
-import { redis } from "@/lib/redis-store";
-
-async function FavouriteCounterContainer() {
-  const sourceId = await getSourceId();
-  const initialCount = sourceId ? await redis.scard(sourceId) : 0;
-
-  return <FavouriteCounter initialCount={initialCount} />;
-}
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 export default function SiteLayout({
   children,
@@ -24,11 +16,14 @@ export default function SiteLayout({
           <Link href={routes.home} className="text-xl font-bold tracking-tight">
             CarDealer CMS
           </Link>
-          <Suspense fallback={
-            <div className="h-10 w-10 rounded-full bg-slate-100 animate-pulse" />
-          }>
-            <FavouriteCounterContainer />
-          </Suspense>
+          <div className="flex items-center gap-2">
+            <Suspense fallback={
+                <div className="h-10 w-10 rounded-full bg-slate-100 animate-pulse" />
+            }>
+                <FavouriteCounter />
+            </Suspense>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
