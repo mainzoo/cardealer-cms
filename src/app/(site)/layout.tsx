@@ -3,6 +3,14 @@ import Link from "next/link";
 import { routes } from "@/config/routes";
 import { FavouriteCounter } from "@/components/layout/favourite-counter";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { redis } from "@/lib/redis-store";
+import { getSourceId } from "@/lib/source-id";
+
+async function CounterWrapper() {
+  const sourceId = await getSourceId();
+  const members = sourceId ? await redis.smembers(sourceId) : [];
+  return <FavouriteCounter initialCount={members.length} />;
+}
 
 export default function SiteLayout({
   children,
@@ -20,7 +28,7 @@ export default function SiteLayout({
             <Suspense fallback={
                 <div className="h-10 w-10 rounded-full bg-slate-100 animate-pulse" />
             }>
-                <FavouriteCounter />
+                <CounterWrapper />
             </Suspense>
             <ThemeToggle />
           </div>
