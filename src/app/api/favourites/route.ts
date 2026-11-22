@@ -4,10 +4,8 @@ import { z } from "zod";
 import { redis, ratelimit } from "@/lib/redis-store";
 import { setSourceId } from "@/lib/source-id";
 import { routes } from "@/config/routes";
-import type { Favourites } from "@/config/types";
 
 export async function POST(req: Request) {
-  // Rate limiting based on IP
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? req.headers.get("x-real-ip") ?? "127.0.0.1";
   const { success } = await ratelimit.limit(ip);
   if (!success) {
@@ -25,20 +23,17 @@ export async function POST(req: Request) {
   const { id } = result.data;
   const sourceId = await setSourceId();
 
-  let favourites = await redis.get<Favourites>(sourceId);
-  if (!favourites) {
-    favourites = { ids: [] };
-  }
-
-  const index = favourites.ids.indexOf(id);
-  if (index > -1) {
-    favourites.ids.splice(index, 1);
+  const isFavourite = await redis.sismember(sourceId, id.toString());
+  
+  if (isFavourite) {
+    await redis.srem(sourceId, id.toString());
   } else {
-    favourites.ids.push(id);
+    await redis.sadd(sourceId, id.toString());
   }
 
-  await redis.set(sourceId, favourites);
+  const members = await redis.smembers(sourceId);
   revalidatePath(routes.favourites);
+  revalidatePath(routes.inventory);
 
-  return NextResponse.json({ ids: favourites.ids }, { status: 200 });
+  return NextResponse.json({ ids: members.map(Number) }, { status: 200 });
 }

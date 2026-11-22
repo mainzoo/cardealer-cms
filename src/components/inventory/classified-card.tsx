@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { routes } from "@/config/routes";
@@ -43,10 +44,35 @@ const getKeyClassifiedInfo = (classified: ClassifiedWithImages) => {
 
 export const ClassifiedCard = (props: ClassifiedCardProps) => {
     const { classified, favourites } = props;
-    const isFavourite = favourites?.ids.includes(classified.id) ?? false;
+    const [isFav, setIsFav] = useState(favourites?.ids.includes(classified.id) ?? false);
     const pathname = usePathname();
-    const isVisible = pathname !== routes.favourites || isFavourite;
 
+    const syncFromStorage = useCallback(() => {
+        const stored = sessionStorage.getItem("favourite-ids");
+        if (stored) {
+            const ids: number[] = JSON.parse(stored);
+            setIsFav(ids.includes(classified.id));
+        }
+    }, [classified.id]);
+
+    useEffect(() => {
+        const handleUpdate = (event: Event) => {
+            const customEvent = event as CustomEvent<{ ids: number[] }>;
+            setIsFav(customEvent.detail.ids.includes(classified.id));
+        };
+
+        window.addEventListener("favourites-updated", handleUpdate);
+        window.addEventListener("pageshow", syncFromStorage);
+        window.addEventListener("focus", syncFromStorage);
+        
+        return () => {
+            window.removeEventListener("favourites-updated", handleUpdate);
+            window.removeEventListener("pageshow", syncFromStorage);
+            window.removeEventListener("focus", syncFromStorage);
+        };
+    }, [classified.id, syncFromStorage]);
+
+    const isVisible = pathname !== routes.favourites || isFav;
     const mainImage = classified.images.find(img => img.isMain) || classified.images[0];
 
     return (
@@ -59,7 +85,7 @@ export const ClassifiedCard = (props: ClassifiedCardProps) => {
                     className="group relative overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md flex flex-col justify-between"
                 >
                     <div className="relative">
-                        <FavouriteButton classifiedId={classified.id} isFavourite={isFavourite} />
+                        <FavouriteButton classifiedId={classified.id} isFavourite={isFav} />
                         <div className="aspect-[3/2] relative w-full overflow-hidden bg-muted">
                             <Image
                                 placeholder="blur"
@@ -77,7 +103,7 @@ export const ClassifiedCard = (props: ClassifiedCardProps) => {
                                     {classified.year}
                                 </span>
                                 <span className="text-lg font-bold text-primary">
-                                    $${classified.price.toLocaleString()}
+                                    ${classified.price.toLocaleString()}
                                 </span>
                             </div>
                             <Link href={routes.singleClassified(classified.slug)}>

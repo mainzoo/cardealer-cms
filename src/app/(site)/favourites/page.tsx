@@ -25,23 +25,22 @@ const fetchFavouritesData = async (ids: number[]) => {
 
 async function FavouritesResults() {
   await connection();
-
   const sourceId = await getSourceId();
-  const favourites = sourceId ? await redis.get<Favourites>(sourceId) : null;
-  const ids = favourites?.ids ?? [];
-
-  if (ids.length === 0) {
+  const members = sourceId ? await redis.smembers(sourceId) : [];
+  const favourites: Favourites = { ids: members.map(Number) };
+  
+  if (favourites.ids.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-dashed p-12 text-center">
         <p className="text-muted-foreground">You haven&apos;t saved any vehicles yet.</p>
-        <Button nativeButton={false} render={<Link href={routes.inventory} />}>
+        <Button nativeButton={false} render={<Link href={routes.home} />}>
           Explore Inventory
         </Button>
       </div>
     );
   }
 
-  const classifieds = await fetchFavouritesData(ids);
+  const classifieds = await fetchFavouritesData(favourites.ids);
 
   return <ClassifiedsList classifieds={classifieds} favourites={favourites} />;
 }
