@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "sonner";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 export const metadata: Metadata = {
   title: "Car Dealer CMS",
@@ -39,9 +40,11 @@ export default function RootLayout({
           mulish.variable
         )}
       >
-        <NextTopLoader showSpinner={false} />
-        <NuqsAdapter>{children}</NuqsAdapter>
-        <Toaster />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <NextTopLoader showSpinner={false} />
+          <NuqsAdapter>{children}</NuqsAdapter>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

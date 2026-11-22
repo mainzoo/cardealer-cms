@@ -2,14 +2,14 @@ import React, { Suspense } from "react";
 import Link from "next/link";
 import { routes } from "@/config/routes";
 import { FavouriteCounter } from "@/components/layout/favourite-counter";
-import { getSourceId } from "@/lib/source-id";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { redis } from "@/lib/redis-store";
+import { getSourceId } from "@/lib/source-id";
 
-async function FavouriteCounterContainer() {
+async function CounterWrapper() {
   const sourceId = await getSourceId();
-  const initialCount = sourceId ? await redis.scard(sourceId) : 0;
-
-  return <FavouriteCounter initialCount={initialCount} />;
+  const members = sourceId ? await redis.smembers(sourceId) : [];
+  return <FavouriteCounter initialCount={members.length} />;
 }
 
 export default function SiteLayout({
@@ -24,11 +24,14 @@ export default function SiteLayout({
           <Link href={routes.home} className="text-xl font-bold tracking-tight">
             CarDealer CMS
           </Link>
-          <Suspense fallback={
-            <div className="h-10 w-10 rounded-full bg-slate-100 animate-pulse" />
-          }>
-            <FavouriteCounterContainer />
-          </Suspense>
+          <div className="flex items-center gap-2">
+            <Suspense fallback={
+                <div className="h-10 w-10 rounded-full bg-slate-100 animate-pulse" />
+            }>
+                <CounterWrapper />
+            </Suspense>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
