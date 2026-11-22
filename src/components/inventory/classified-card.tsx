@@ -56,8 +56,6 @@ export const ClassifiedCard = (props: ClassifiedCardProps) => {
     }, [classified.id]);
 
     useEffect(() => {
-        syncFromStorage();
-        
         const handleUpdate = (event: Event) => {
             const customEvent = event as CustomEvent<{ ids: number[] }>;
             setIsFav(customEvent.detail.ids.includes(classified.id));

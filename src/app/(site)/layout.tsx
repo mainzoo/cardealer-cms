@@ -2,6 +2,15 @@ import React, { Suspense } from "react";
 import Link from "next/link";
 import { routes } from "@/config/routes";
 import { FavouriteCounter } from "@/components/layout/favourite-counter";
+import { getSourceId } from "@/lib/source-id";
+import { redis } from "@/lib/redis-store";
+
+async function FavouriteCounterContainer() {
+  const sourceId = await getSourceId();
+  const initialCount = sourceId ? await redis.scard(sourceId) : 0;
+
+  return <FavouriteCounter initialCount={initialCount} />;
+}
 
 export default function SiteLayout({
   children,
@@ -18,7 +27,7 @@ export default function SiteLayout({
           <Suspense fallback={
             <div className="h-10 w-10 rounded-full bg-slate-100 animate-pulse" />
           }>
-            <FavouriteCounter />
+            <FavouriteCounterContainer />
           </Suspense>
         </div>
       </header>

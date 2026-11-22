@@ -32,9 +32,9 @@ async function FavouritesResults() {
   if (favourites.ids.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-dashed p-12 text-center">
-        <p className="text-muted-foreground">You haven't saved any vehicles yet.</p>
-        <Button asChild>
-          <Link href={routes.home}>Explore Inventory</Link>
+        <p className="text-muted-foreground">You haven&apos;t saved any vehicles yet.</p>
+        <Button nativeButton={false} render={<Link href={routes.home} />}>
+          Explore Inventory
         </Button>
       </div>
     );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,17 +18,10 @@ export const FavouriteButton = ({
     isFavourite: initialIsFavourite,
     className,
 }: FavouriteButtonProps) => {
-    const [isFavourite, setIsFavourite] = useState(initialIsFavourite);
     const [isLoading, setIsLoading] = useState(false);
-
-    useEffect(() => {
-        setIsFavourite(initialIsFavourite);
-    }, [initialIsFavourite]);
 
     const handleClick = async () => {
         setIsLoading(true);
-        const previousState = isFavourite;
-        setIsFavourite(!previousState);
 
         try {
             const response = await fetch(endpoints.favourites, {
@@ -43,7 +36,6 @@ export const FavouriteButton = ({
                 } else {
                     toast.error("Failed to update favourites");
                 }
-                setIsFavourite(previousState);
             } else {
                 const data = await response.json();
                 sessionStorage.setItem("favourite-ids", JSON.stringify(data.ids));
@@ -57,8 +49,7 @@ export const FavouriteButton = ({
                 }
                 window.dispatchEvent(new CustomEvent("favourites-updated", { detail: { ids: data.ids } }));
             }
-        } catch (error) {
-            setIsFavourite(previousState);
+        } catch {
             toast.error("Failed to update favourites");
         } finally {
             setIsLoading(false);
@@ -72,17 +63,17 @@ export const FavouriteButton = ({
             size="icon"
             onClick={handleClick}
             disabled={isLoading}
-            aria-label={isFavourite ? "Remove from favorites" : "Add to favorites"}
+            aria-label={initialIsFavourite ? "Remove from favorites" : "Add to favorites"}
             className={cn(
                 "absolute top-3 right-3 z-10 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-xs transition-all duration-200 h-8 w-8 lg:h-9 lg:w-9 p-0",
-                isFavourite && "bg-black/60 text-rose-500",
+                initialIsFavourite && "bg-black/60 text-rose-500",
                 className
             )}
         >
             <Heart
                 className={cn(
                     "w-4 h-4 lg:w-5 lg:h-5 transition-all duration-200",
-                    isFavourite ? "fill-rose-500 text-rose-500 scale-110" : "text-white hover:text-rose-400"
+                    initialIsFavourite ? "fill-rose-500 text-rose-500 scale-110" : "text-white hover:text-rose-400"
                 )}
             />
         </Button>
