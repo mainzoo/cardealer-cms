@@ -2,7 +2,7 @@
 
 import { Filter, Search } from "lucide-react";
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -55,6 +55,38 @@ const getRangeSteps = (steps: number[], min: number, max: number) =>
     new Set([min, ...steps.filter((step) => step > min && step < max), max]),
   ).sort((a, b) => a - b);
 
+function DebouncedSearchInput({
+  query,
+  onQueryChange,
+}: {
+  query: string;
+  onQueryChange: (query: string | null) => void;
+}) {
+  const [value, setValue] = useState(query);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const nextQuery = value.trim() || null;
+      if (nextQuery !== (query || null)) {
+        onQueryChange(nextQuery);
+      }
+    }, 350);
+    return () => clearTimeout(handler);
+  }, [onQueryChange, query, value]);
+
+  return (
+    <div className="relative">
+      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+      <Input
+        className="pl-9"
+        placeholder="Search classifieds..."
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+      />
+    </div>
+  );
+}
+
 export function FilterSidebar({ taxonomies }: { taxonomies: Taxonomies }) {
   const [filters, setFilters] = useQueryStates(
     {
@@ -80,16 +112,10 @@ export function FilterSidebar({ taxonomies }: { taxonomies: Taxonomies }) {
     { shallow: false },
   );
 
-  const [debouncedQ, setDebouncedQ] = useState(filters.q || "");
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if ((debouncedQ || null) !== (filters.q || null)) {
-        setFilters({ q: debouncedQ || null, page: 1 });
-      }
-    }, 350);
-    return () => clearTimeout(handler);
-  }, [debouncedQ, filters.q, setFilters]);
+  const handleSearchQueryChange = useCallback(
+    (q: string | null) => setFilters({ q, page: 1 }),
+    [setFilters],
+  );
 
   const handleFilterChange = (
     key: keyof typeof filters,
@@ -112,7 +138,6 @@ export function FilterSidebar({ taxonomies }: { taxonomies: Taxonomies }) {
   };
 
   const clearFilters = () => {
-    setDebouncedQ("");
     setFilters({
       q: null,
       make: null,
@@ -174,15 +199,11 @@ export function FilterSidebar({ taxonomies }: { taxonomies: Taxonomies }) {
 
       <div className="space-y-4">
         {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            className="pl-9"
-            placeholder="Search classifieds..."
-            value={debouncedQ}
-            onChange={(e) => setDebouncedQ(e.target.value)}
-          />
-        </div>
+        <DebouncedSearchInput
+          key={filters.q ?? ""}
+          query={filters.q ?? ""}
+          onQueryChange={handleSearchQueryChange}
+        />
 
         {/* Make */}
         <div>
