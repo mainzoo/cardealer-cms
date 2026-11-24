@@ -165,7 +165,7 @@ export function FilterSidebar({ taxonomies }: { taxonomies: Taxonomies }) {
 
   const content = (
     <div className="flex flex-col gap-5 rounded-xl border bg-card p-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pr-8 lg:pr-0">
         <h2 className="text-lg font-semibold">Filters</h2>
         <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>
           Clear all

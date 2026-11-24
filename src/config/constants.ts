@@ -9,5 +9,5 @@ export const imageSources = [
     "1617814076367-b759c7d7e738",
 ] as const;
 
-export const CLASSIFIEDS_PER_PAGE = 12;
+export const CLASSIFIEDS_PER_PAGE = 9;
 
