@@ -51,25 +51,64 @@ const optionalEnumFilter = <T extends readonly [string, ...string[]]>(
   values: T,
 ) => z.enum(values).optional().catch(undefined);
 
-const inventoryFiltersSchema = z.object({
-  q: optionalTextFilter,
-  make: optionalTextFilter,
-  model: optionalTextFilter,
-  modelVariant: optionalTextFilter,
-  minYear: optionalIntegerFilter,
-  maxYear: optionalIntegerFilter,
-  minPrice: optionalIntegerFilter,
-  maxPrice: optionalIntegerFilter,
-  minReading: optionalIntegerFilter,
-  maxReading: optionalIntegerFilter,
-  odoUnit: optionalEnumFilter(ODO_UNITS),
-  transmission: optionalEnumFilter(TRANSMISSIONS),
-  fuelType: optionalEnumFilter(FUEL_TYPES),
-  bodyType: optionalEnumFilter(BODY_TYPES),
-  color: optionalEnumFilter(COLORS),
-  drivetrain: optionalEnumFilter(DRIVETRAINS),
-  doors: optionalDoorsFilter,
-});
+const inventoryFiltersSchema = z
+  .object({
+    q: optionalTextFilter,
+    make: optionalTextFilter,
+    model: optionalTextFilter,
+    modelVariant: optionalTextFilter,
+    minYear: optionalIntegerFilter,
+    maxYear: optionalIntegerFilter,
+    minPrice: optionalIntegerFilter,
+    maxPrice: optionalIntegerFilter,
+    minReading: optionalIntegerFilter,
+    maxReading: optionalIntegerFilter,
+    odoUnit: optionalEnumFilter(ODO_UNITS),
+    transmission: optionalEnumFilter(TRANSMISSIONS),
+    fuelType: optionalEnumFilter(FUEL_TYPES),
+    bodyType: optionalEnumFilter(BODY_TYPES),
+    color: optionalEnumFilter(COLORS),
+    drivetrain: optionalEnumFilter(DRIVETRAINS),
+    doors: optionalDoorsFilter,
+  })
+  .transform((filters) => {
+    const normalized = { ...filters };
+
+    if (
+      normalized.minYear !== undefined &&
+      normalized.maxYear !== undefined &&
+      normalized.minYear > normalized.maxYear
+    ) {
+      [normalized.minYear, normalized.maxYear] = [
+        normalized.maxYear,
+        normalized.minYear,
+      ];
+    }
+
+    if (
+      normalized.minPrice !== undefined &&
+      normalized.maxPrice !== undefined &&
+      normalized.minPrice > normalized.maxPrice
+    ) {
+      [normalized.minPrice, normalized.maxPrice] = [
+        normalized.maxPrice,
+        normalized.minPrice,
+      ];
+    }
+
+    if (
+      normalized.minReading !== undefined &&
+      normalized.maxReading !== undefined &&
+      normalized.minReading > normalized.maxReading
+    ) {
+      [normalized.minReading, normalized.maxReading] = [
+        normalized.maxReading,
+        normalized.minReading,
+      ];
+    }
+
+    return normalized;
+  });
 
 type InventoryFilters = z.infer<typeof inventoryFiltersSchema>;
 
