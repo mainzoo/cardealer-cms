@@ -3,6 +3,7 @@ import Link from "next/link";
 import { routes } from "@/config/routes";
 import { FavouriteCounter } from "@/components/layout/favourite-counter";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { DesktopNav, MobileNav } from "@/components/layout/nav-menu";
 import { redis } from "@/lib/redis-store";
 import { getSourceId } from "@/lib/source-id";
 
@@ -20,12 +21,16 @@ export function PublicHeader() {
           CarDealer CMS
         </Link>
         <div className="flex items-center gap-2">
+          <div className="mr-4">
+            <DesktopNav />
+          </div>
           <Suspense fallback={
             <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
           }>
             <CounterWrapper />
           </Suspense>
           <ThemeToggle />
+          <MobileNav />
         </div>
       </div>
     </header>
