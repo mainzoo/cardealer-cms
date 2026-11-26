@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { routes } from "@/config/routes";
+import { navLinks } from "@/config/constants";
 import { cn } from "cn";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,11 +15,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-export const navLinks = [
-  { name: "Home", href: routes.home },
-  { name: "Inventory", href: routes.inventory },
-  { name: "Favourites", href: routes.favourites },
-] as const;
+export { navLinks };
 
 export function DesktopNav() {
   const pathname = usePathname();

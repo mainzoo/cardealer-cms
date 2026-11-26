@@ -11,3 +11,12 @@ export const imageSources = [
 
 export const CLASSIFIEDS_PER_PAGE = 9;
 
+import { routes } from "@/config/routes";
+
+export const navLinks = [
+  { name: "Home", href: routes.home },
+  { name: "Inventory", href: routes.inventory },
+  { name: "Favourites", href: routes.favourites },
+] as const;
+
+
