@@ -1,0 +1,77 @@
+# Dependencias y gestores de paquetes
+node_modules/
+.pnp/
+.pnp.*
+.yarn/*
+!썬.yarn/patches
+!썬.yarn/plugins
+!썬.yarn/releases
+!썬.yarn/versions
+
+# Lockfiles pesados (evita indexar bloqueos binarios de cientos de KB)
+bun.lock
+bun.lockb
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Compilación y caché de Next.js / TypeScript / Turbopack
+.next/
+out/
+build/
+dist/
+.turbo/
+.vercel/
+*.tsbuildinfo
+next-env.d.ts
+
+# Metadatos de otras herramientas de IA / editores / IDEs
+.git/
+.claude/
+.cursor/
+.devin/
+.agents/
+.vscode/
+.idea/
+
+# Entornos y secretos
+.env
+.env.*
+!.env.example
+
+# Bases de datos locales SQLite / Prisma
+/prisma/*.db
+/prisma/*.db-journal
+/prisma/*.sqlite
+/prisma/*.sqlite3
+
+# Archivos multimedia y binarios estáticos en public/ (evita sobrecargar el contexto con imágenes/fuentes/videos)
+public/**/*.png
+public/**/*.jpg
+public/**/*.jpeg
+public/**/*.svg
+public/**/*.ico
+public/**/*.webp
+public/**/*.gif
+public/**/*.mp4
+public/**/*.webm
+public/**/*.pdf
+public/**/*.woff
+public/**/*.woff2
+public/**/*.ttf
+public/**/*.eot
+
+# Archivos de caché del sistema y temporales
+.DS_Store
+Thumbs.db
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Logs y depuración
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
