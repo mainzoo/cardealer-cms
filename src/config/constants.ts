@@ -11,3 +11,26 @@ export const imageSources = [
 
 export const CLASSIFIEDS_PER_PAGE = 9;
 
+import { routes } from "@/config/routes";
+
+export const navLinks = [
+  { name: "Home", href: routes.home },
+  { name: "Inventory", href: routes.inventory },
+  { name: "Favourites", href: routes.favourites },
+] as const;
+
+export const DEALERSHIP_LOCATIONS = [
+  {
+    city: "ORLANDO (HQ)",
+    phone: "+1 (555) 382-9471",
+    phoneHref: "tel:+15553829471",
+  },
+  {
+    city: "MIAMI SHOWROOM",
+    phone: "+1 (555) 491-8203",
+    phoneHref: "tel:+15554918203",
+  },
+] as const;
+
+
+
