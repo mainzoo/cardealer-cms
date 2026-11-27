@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { routes } from "@/config/routes";
 import { navLinks } from "@/config/constants";
+import { NewsletterForm } from "@/components/layout/newsletter-form";
 import {
   SiFacebook,
   SiInstagram,
@@ -74,7 +75,7 @@ export function PublicFooter() {
             </ul>
           </div>
 
-          {/* Column 3: Newsletter (Prepared Space) */}
+          {/* Column 3: Newsletter Form */}
           <div className="flex flex-col gap-4">
             <h3 className="font-heading text-base font-semibold uppercase tracking-wider text-foreground">
               Stay Updated
@@ -83,15 +84,7 @@ export function PublicFooter() {
               Subscribe to receive updates on newly arrived inventory, special
               promotions, and exclusive automotive insights.
             </p>
-            <div className="rounded-lg border border-border bg-background p-4 text-xs text-muted-foreground">
-              <span className="font-medium text-foreground">
-                Newsletter Form
-              </span>
-              <p className="mt-1">
-                Coming soon! Integrated subscription management will be available
-                here.
-              </p>
-            </div>
+            <NewsletterForm />
           </div>
         </div>
 
