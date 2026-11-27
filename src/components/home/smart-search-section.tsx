@@ -160,7 +160,8 @@ export function SmartSearchSection({ taxonomies, initialData, favourites }: Prop
           </div>
         </div>
 
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 ${showAdvanced ? "block" : "hidden lg:grid"}`}>
+        {showAdvanced && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           <div>
             <label className="mb-1 block text-xs font-medium text-muted-foreground">Make</label>
             <Select value={make} onValueChange={(v) => { setMake(v === "all-makes" ? "" : v || ""); setModel(""); }}>
@@ -230,6 +231,7 @@ export function SmartSearchSection({ taxonomies, initialData, favourites }: Prop
             </Select>
           </div>
         </div>
+        )}
 
         <div className="flex items-center justify-between pt-1">
           <div className="flex items-center gap-2">
