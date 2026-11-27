@@ -1,10 +1,44 @@
+export const instant = false;
 import React from "react";
 import Link from "next/link";
+import { connection } from "next/server";
 import { Button } from "@/components/ui/button";
 import { routes } from "@/config/routes";
 import { ArrowRight, ShieldCheck, Zap, Sparkles } from "lucide-react";
+import { prisma } from "@/lib/prisma";
+import { redis } from "@/lib/redis-store";
+import { getSourceId } from "@/lib/source-id";
+import { aiSmartSearchAction } from "@/app/actions/smart-search.action";
+import { SmartSearchSection } from "@/components/home/smart-search-section";
+import { Favourites } from "@/config/types";
 
-export default function Home() {
+export default async function Home() {
+  await connection();
+
+  const [makes, models, ranges, sourceId] = await Promise.all([
+    prisma.make.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    prisma.model.findMany({ select: { id: true, name: true, makeId: true }, orderBy: { name: "asc" } }),
+    prisma.classified.aggregate({
+      _min: { price: true },
+      _max: { price: true },
+    }),
+    getSourceId(),
+  ]);
+
+  const members = sourceId ? await redis.smembers(sourceId) : [];
+  const favourites: Favourites = { ids: members.map(Number) };
+
+  const initialData = await aiSmartSearchAction("", {});
+
+  const taxonomies = {
+    makes,
+    models,
+    ranges: {
+      minPrice: ranges._min.price ?? 0,
+      maxPrice: ranges._max.price ?? 150000,
+    },
+  };
+
   return (
     <div className="flex flex-col gap-12 py-6 md:py-12">
       {/* Hero Section */}
@@ -36,6 +70,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Smart Search Section */}
+      <SmartSearchSection taxonomies={taxonomies} initialData={initialData} favourites={favourites} />
 
       {/* Features Grid */}
       <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -72,3 +109,4 @@ export default function Home() {
     </div>
   );
 }
+
