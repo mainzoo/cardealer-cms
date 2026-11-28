@@ -249,6 +249,7 @@ export async function aiSmartSearchAction(
   };
 
   const where: Prisma.ClassifiedWhereInput = {
+    status: "LIVE",
     ...(finalFilters.q
       ? {
           OR: [
