@@ -7,8 +7,9 @@ import { redis } from "@/lib/redis-store";
 import { getSourceId } from "@/lib/source-id";
 import { aiSmartSearchAction } from "@/app/actions/smart-search.action";
 import { SmartSearchSection } from "@/components/home/smart-search-section";
-import { BodyTypesSection } from "@/components/home/body-types-section";
 import { WelcomeBannerSection } from "@/components/home/welcome-banner-section";
+import { InventoryStatsSection } from "@/components/home/inventory-stats-section";
+import { BodyTypesSection } from "@/components/home/body-types-section";
 import { BestBrandsSection } from "@/components/home/best-brands-section";
 import { Favourites } from "@/config/types";
 
@@ -75,19 +76,22 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col gap-16 py-6 md:py-12">
-      {/* Welcome Banner Section */}
-      <WelcomeBannerSection totalStockCount={totalStockCount} />
+      {/* 1. Welcome Banner Section */}
+      <WelcomeBannerSection />
 
-      {/* Smart Search Section */}
+      {/* 2. Smart Search Section */}
       <SmartSearchSection taxonomies={taxonomies} initialData={initialData} favourites={favourites} />
 
-      {/* Body Types Section */}
+      {/* 3. Inventory Stats Section */}
+      <InventoryStatsSection totalStockCount={totalStockCount} />
+
+      {/* 4. Body Types Section */}
       <BodyTypesSection bodyTypeCounts={bodyTypeCounts} />
 
-      {/* Best Brands Section */}
+      {/* 5. Best Brands Section */}
       <BestBrandsSection brands={topBrands} />
 
-      {/* Features Grid */}
+      {/* 6. Features Grid */}
       <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <div className="flex flex-col gap-3 rounded-2xl border border-border/50 bg-card p-6 shadow-sm transition-all hover:border-primary/50">
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -122,6 +126,7 @@ export default async function Home() {
     </div>
   );
 }
+
 
 
 

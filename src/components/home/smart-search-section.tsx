@@ -276,11 +276,13 @@ export function SmartSearchSection({ taxonomies, initialData, favourites }: Prop
             <Button variant="outline" size="sm" onClick={handleReset}>Reset Search</Button>
           </div>
         ) : (
-          <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:pb-0 scrollbar-none">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {data.classifieds.map((classified) => (
-              <div key={classified.id} className="min-w-[280px] sm:min-w-[320px] md:min-w-0 snap-start shrink-0 flex">
-                <div className="w-full"><ClassifiedCard classified={classified} favourites={favourites} /></div>
-              </div>
+              <ClassifiedCard
+                key={classified.id}
+                classified={classified}
+                favourites={favourites}
+              />
             ))}
           </div>
         )}

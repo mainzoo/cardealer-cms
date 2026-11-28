@@ -82,11 +82,11 @@ export const ClassifiedCard = (props: ClassifiedCardProps) => {
                     initial={{ opacity: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className="group relative overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md flex flex-col justify-between"
+                    className="group relative overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md flex flex-col justify-between min-w-0"
                 >
-                    <div className="relative">
+                    <div className="relative min-w-0">
                         <FavouriteButton classifiedId={classified.id} isFavourite={isFav} />
-                        <div className="aspect-[3/2] relative w-full overflow-hidden bg-muted">
+                        <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
                             <Image
                                 placeholder="blur"
                                 blurDataURL={mainImage?.thumbhash || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="}
@@ -94,6 +94,7 @@ export const ClassifiedCard = (props: ClassifiedCardProps) => {
                                 alt={mainImage?.alt || classified.title || "Vehicle"}
                                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                                 fill={true}
+                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                 quality={80}
                             />
                         </div>
