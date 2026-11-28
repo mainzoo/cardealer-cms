@@ -126,6 +126,7 @@ const fetchInventoryData = async (
   await connection();
 
   const where: Prisma.ClassifiedWhereInput = {
+    status: "LIVE",
     ...(filters.q
       ? {
           OR: [
@@ -244,6 +245,7 @@ const fetchTaxonomies = async (makeName?: string, modelName?: string) => {
       orderBy: { name: "asc" },
     }),
     prisma.classified.aggregate({
+      where: { status: "LIVE" },
       _min: { year: true, price: true, odoReading: true },
       _max: { year: true, price: true, odoReading: true },
     }),

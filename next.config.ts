@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
         pathname: "/photo-*",
       },
+      {
+        protocol: "https",
+        hostname: "vl.imgix.net",
+      },
     ],
   },
   experimental: {
@@ -27,3 +31,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
